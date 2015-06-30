@@ -1,17 +1,13 @@
 doctype html
 html(lang="en")
   head
-    title= Test
+    title= Bootstrap
 
   body
-    h1 Jade - node template engine
-    #container.col
-      if youAreUsingJade
-        p You are amazing
-      else
-        p Get on it!
-      p.
-        Jade is a terse and simple
-        templating language with a
-        strong focus on performance
-        and powerful features.
+    script(type='text/javascript' src="assets/js/require.js")
+    script(type='text/javascript').
+      requirejs.config({
+        waitSeconds: 0,
+        baseUrl: './js/'
+      });
+      require(["main"], function(main){});

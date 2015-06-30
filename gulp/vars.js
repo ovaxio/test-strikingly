@@ -11,10 +11,6 @@ module.exports = {
     jade : [
       src_path+'jade/**/*.jade'
     ],
-    bootstrap: [
-      src_path+'coffee/inc/**/*.coffee',
-      src_path+'coffee/bootstrap.coffee'
-    ],
     assets : [
       src_path+'assets/**/*'
     ]
@@ -26,9 +22,8 @@ module.exports = {
     assets : prod_path+'assets'
   },
   watch : {
-    coffee : [src_path+'/coffee/**/*.coffee', '!'+src_path+'/coffee/bootstrap.coffee'],
-    jade : src_path+'/jade/**/*.jade',
-    bootstrap : [src_path+'coffee/inc/**/*.coffee', src_path+'/coffee/bootstrap.coffee']
+    coffee : [src_path+'/coffee/**/*.coffee'],
+    jade : src_path+'/jade/**/*.jade'
   },
   onError: {
     title: "Error <%= error.plugin %> : <%= error.name %>",

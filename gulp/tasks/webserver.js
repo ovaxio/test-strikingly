@@ -7,10 +7,11 @@ var gulp      = require('gulp'),
   });
 
 gulp.task('webserver', function() {
-  gulp.src('.')
+  gulp.src('app')
     .pipe(plugins.server({
       livereload: true,
-      directoryListing: true,
+      directoryListing: false,
+      defaultFile: 'index.html',
       open: true,
       port: 1234
     }));

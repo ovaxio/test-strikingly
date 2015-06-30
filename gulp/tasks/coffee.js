@@ -3,9 +3,9 @@ var gulp      = require('gulp'),
   plugins     = require('gulp-load-plugins')(),
   amdOptimize = require('amd-optimize'),
   del         = require('del'),
-  rjsConf     = GLOBVARS.src.js + "/rjs-build.js";
+  rjsConf     = GLOBVARS.src.basedir + "rjs-build.js";
 
-  gulp.task('coffee:dev', function () {
+gulp.task('coffee:dev', function () {
   gulp.src(GLOBVARS.src.coffee)
   .pipe(plugins.plumber({errorHandler: plugins.notify.onError(GLOBVARS.onError)}))
   .pipe(plugins.coffeelint({max_line_length: {
