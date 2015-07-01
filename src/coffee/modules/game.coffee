@@ -29,7 +29,7 @@ Module = (debug, utils, WordsList, Word, $)->
       return promise
 
     start: ()->
-      _DEBUG_LOG_ and @log 'start', 0
+      _DEBUG_LOG_ and @log 'start()', 1
       data =
         'playerId' : @options.userId
         'action': 'startGame'
@@ -37,14 +37,14 @@ Module = (debug, utils, WordsList, Word, $)->
       promise = @callApi data
       .done (result)=>
         $.extend @, result
-
+        _DEBUG_LOG_ and @log 'start() > data = ', 0, result.data
         # nextWord
         @nextWord()
 
       return promise
 
     nextWord: ()->
-      _DEBUG_LOG_ and @log 'nextWord'
+      _DEBUG_LOG_ and @log 'nextWord', 1
 
       data =
         'sessionId' : @sessionId
@@ -52,9 +52,9 @@ Module = (debug, utils, WordsList, Word, $)->
 
       promise = @callApi data
       .done (result)=>
-        console.log result.data
+        _DEBUG_LOG_ and @log 'nextWord() > data = ', 0, result.data
         @guessWord = new Word result.data.word, 0, 0
-
+        nbWord++
         @makeGuess()
 
       return promise
@@ -62,6 +62,7 @@ Module = (debug, utils, WordsList, Word, $)->
     makeGuess: ()->
       _DEBUG_LOG_ and @log 'makeGuess', 1
       @wordsList.makeGuess @guessWord, @.data.numberOfGuessAllowedForEachWord
+
       if @guessWord?.bestLetter?
         data =
           'sessionId' : @sessionId
@@ -75,11 +76,12 @@ Module = (debug, utils, WordsList, Word, $)->
 
           switch true
             when @guessWord.wrongGuess >= @data.numberOfGuessAllowedForEachWord or -1 == @guessWord.value.indexOf '*'
-              console.log @guessWord
+              _DEBUG_LOG_ and @log 'makeGuess() > guessWord = ', 0, @guessWord
 
               if nbWord < @data.numberOfWordsToGuess
                 @getResult()
                 @nextWord()
+
               else
                 @getResult()
                 .done (result)->
@@ -88,12 +90,11 @@ Module = (debug, utils, WordsList, Word, $)->
                     @submitResult()
             else
               @guessWord.regex = @guessWord.getRegex()
-              # console.log @guessWord
               @makeGuess()
 
         return promise
 
-      console.log @guessWord
+      _DEBUG_LOG_ and @log 'makeGuess() > guessWord = ', 0, @guessWord
       @nextWord()
       return false
 
@@ -105,7 +106,7 @@ Module = (debug, utils, WordsList, Word, $)->
 
       promise = @callApi data
       .done (result)=>
-        console.log result.data
+        _DEBUG_LOG_ and @log 'getResult() > data =', 0, result.data
 
       return promise
 
@@ -117,7 +118,7 @@ Module = (debug, utils, WordsList, Word, $)->
 
       promise = @callApi data
       .done (result)=>
-        console.log result.data
+        _DEBUG_LOG_ and @log 'submitResult() > data = ', 0, result.data
 
       return promise
 
