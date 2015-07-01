@@ -5,8 +5,8 @@ Module = (debug, utils, WordsList, Word, $)->
     _DEBUG_LOG_ and moduleName : 'Game'
 
     defaults =
-      url: 'https://strikingly-hangman.herokuapp.com/game/on'
-      userId: 'guillaume.chambard@gmail.com'
+      url: ''
+      userId: ''
     _DEBUG_LOG_ and defaults.debug = 1
 
     nbWord = 0
