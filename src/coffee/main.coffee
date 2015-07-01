@@ -24,3 +24,25 @@ define (require)->
     # .done ()->
     #   console.log guessWord
 
+# if !window._DEBUG_LOG_?
+#   window._DEBUG_LOG_ = true
+
+# define (require)->
+#   $        = require 'jquery'
+#   utils    = require 'inc/utils'
+#   WordList = require 'modules/wordlist'
+#   Word     = require 'modules/word'
+
+#   dic = new WordList()
+#   dic.done ()->
+
+#     # startGame
+
+#     # nextWord
+#     guessWord = new Word '*a**', 0, 0
+
+#     # guessWord
+#     # while -1 != guessWord.value.indexOf '*'
+#     dic.makeGuess guessWord
+
+

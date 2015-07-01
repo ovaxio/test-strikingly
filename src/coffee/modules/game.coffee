@@ -7,13 +7,13 @@ Module = (debug, utils, WordsList, Word, $)->
     defaults =
       url: ''
       userId: ''
-    _DEBUG_LOG_ and defaults.debug = 1
+    _DEBUG_LOG_ and defaults.debug = 0
 
-    nbTry = 11
+    nbWord = 0
 
     constructor: (options= {})->
       @options = utils.extend defaults, options
-      _DEBUG_LOG_ and @log 'constructor', 1, @
+      _DEBUG_LOG_ and @log 'constructor', 0, @
 
       @wordsList = new WordsList()
 
@@ -29,7 +29,7 @@ Module = (debug, utils, WordsList, Word, $)->
       return promise
 
     start: ()->
-      _DEBUG_LOG_ and @log 'start', 1
+      _DEBUG_LOG_ and @log 'start', 0
       data =
         'playerId' : @options.userId
         'action': 'startGame'
@@ -44,9 +44,7 @@ Module = (debug, utils, WordsList, Word, $)->
       return promise
 
     nextWord: ()->
-      _DEBUG_LOG_ and @log 'nextWord', 1
-
-      @getResult()
+      _DEBUG_LOG_ and @log 'nextWord'
 
       data =
         'sessionId' : @sessionId
@@ -63,35 +61,59 @@ Module = (debug, utils, WordsList, Word, $)->
 
     makeGuess: ()->
       _DEBUG_LOG_ and @log 'makeGuess', 1
-      @wordsList.makeGuess @guessWord
+      @wordsList.makeGuess @guessWord, @.data.numberOfGuessAllowedForEachWord
+      if @guessWord?.bestLetter?
+        data =
+          'sessionId' : @sessionId
+          'action' : 'guessWord'
+          'guess' :  @guessWord.bestLetter.toUpperCase()
 
-      data =
-        'sessionId' : @sessionId
-        'action' : 'guessWord'
-        'guess' :  @guessWord.bestLetter.toUpperCase()
+        promise = @callApi data
+        .done (result)=>
+          @guessWord.value = result.data.word
+          @guessWord.wrongGuess = result.data.wrongGuessCountOfCurrentWord
 
-      promise = @callApi data
-      .done (result)=>
-        @guessWord.value = result.data.word
-        @guessWord.wrongGuess = result.data.wrongGuessCountOfCurrentWord
+          switch true
+            when @guessWord.wrongGuess >= @data.numberOfGuessAllowedForEachWord or -1 == @guessWord.value.indexOf '*'
+              console.log @guessWord
 
-        switch true
-          when @guessWord.wrongGuess >= @data.numberOfGuessAllowedForEachWord or -1 == @guessWord.value.indexOf '*'
-            console.log @guessWord
-            @nextWord()
-            true
-          else
-            @guessWord.regex = @guessWord.getRegex()
-            # console.log @guessWord
-            @makeGuess()
+              if nbWord < @data.numberOfWordsToGuess
+                @getResult()
+                @nextWord()
+              else
+                @getResult()
+                .done (result)->
+                  submitScore = window.prompt 'Do you want to submit your score of '+result.score+' (write \'yes\' to confirm)'
+                  if 'yes' == submitScore
+                    @submitResult()
+            else
+              @guessWord.regex = @guessWord.getRegex()
+              # console.log @guessWord
+              @makeGuess()
 
-      return promise
+        return promise
+
+      console.log @guessWord
+      @nextWord()
+      return false
 
     getResult: ()->
       _DEBUG_LOG_ and @log 'getResult', 1
       data =
         'sessionId' : @sessionId
         'action': 'getResult'
+
+      promise = @callApi data
+      .done (result)=>
+        console.log result.data
+
+      return promise
+
+    submitResult: ()->
+      _DEBUG_LOG_ and @log 'submitResult', 1
+      data =
+        'sessionId' : @sessionId
+        'action': 'submitResult'
 
       promise = @callApi data
       .done (result)=>

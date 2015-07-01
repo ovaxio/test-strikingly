@@ -55,6 +55,7 @@ Module = (debug, utils, $)->
 
     getSortedLetter: (arrayFreq)->
       _DEBUG_LOG_ and @log 'getSortedLetter', 2
+
       letters = Object.keys arrayFreq
       cb = (a, b)->
         if arrayFreq[a] > arrayFreq[b]
@@ -74,23 +75,40 @@ Module = (debug, utils, $)->
 
       return listWord
 
-    makeGuess : (guessWord)->
+    # Different Algo to find the best score for the next guess
+    # TODO: need to improve I think
+    ###########################################################
+    # getLetterScore: (freq, nbWord, stillTry)->
+    #   _DEBUG_LOG_ and @log 'getLetterScore', 2
+
+    #   score = {}
+    #   for k, v of freq
+    #     p = v / nbWord
+    #     entropy = 0
+    #     entropy -= p * Math.log p
+    #     score[k] = (1 - stillTry) * p + (1 - stillTry) * entropy + stillTry * p + stillTry * entropy
+
+      return score
+
+    makeGuess : (guessWord, maxGuess)->
       _DEBUG_LOG_ and @log 'makeGuess', 2
+
       words = @getPossibleWords @allWords, guessWord
-      # console.log words
-
       freq = @getLetterFreq words
-      letters = @getSortedLetter freq
 
+      # stillTry = guessWord.wrongGuess/maxGuess
+      # score = @getLetterScore freq, words.length, stillTry
+      # console.log score
+
+      letters = @getSortedLetter freq
       letters = (char for char in letters when -1 == guessWord.value.indexOf(char))
 
       if guessWord.bestLetter?
         guessWord.wrongLetter += guessWord.bestLetter
         letters = (char for char in letters when -1 == guessWord.wrongLetter.indexOf(char))
 
-      # console.log letters
       guessWord.bestLetter = letters.shift()
-
+      _DEBUG_LOG_ and @log ' > guessWord =', 0, guessWord
 
   return WordsList
 

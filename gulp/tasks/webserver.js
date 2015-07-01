@@ -9,7 +9,7 @@ var gulp      = require('gulp'),
 gulp.task('webserver', function() {
   gulp.src('app')
     .pipe(plugins.server({
-      livereload: true,
+      livereload: false,
       directoryListing: false,
       defaultFile: 'index.html',
       open: true,
