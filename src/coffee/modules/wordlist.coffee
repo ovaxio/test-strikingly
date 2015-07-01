@@ -6,6 +6,7 @@ Module = (debug, utils, $)->
 
     defaults = {}
     _DEBUG_LOG_ and defaults.debug = 0
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
 
     constructor: (options= {})->
       @options = utils.extend defaults, options
@@ -15,15 +16,26 @@ Module = (debug, utils, $)->
       @allWords = []
       dfd = $.Deferred()
 
-      @getAllWords()
+
+      pAll = @getAllWords()
       .fail (err)=>
         _DEBUG_LOG_ and @log err
         return
       .done (data)=>
         _DEBUG_LOG_ and @log 'getAllWords > data received', 2
         @allWords = data.split "\n"
-        dfd.resolve()
 
+      pShort = @getShortListWords()
+      .fail (err)=>
+        _DEBUG_LOG_ and @log err
+        return
+      .done (data)=>
+        _DEBUG_LOG_ and @log 'getShortListWords > data received', 2
+        @shortWords = data.split "\n"
+
+      pMaster = $.when pAll, pShort
+      .done ()->
+        dfd.resolve()
 
       return dfd.promise @
 
@@ -31,6 +43,16 @@ Module = (debug, utils, $)->
       _DEBUG_LOG_ and @log 'getAllWords', 2
       promise = $.ajax
         url: "assets/wordslist.txt",
+        type: 'GET',
+        dataType: 'text'
+
+      _DEBUG_LOG_ and @log 'getAllWords > promise = ', 3, promise
+      return promise
+
+    getShortListWords: ()->
+      _DEBUG_LOG_ and @log 'getShortListWords', 2
+      promise = $.ajax
+        url: "assets/wordslist-short.txt",
         type: 'GET',
         dataType: 'text'
 
@@ -75,40 +97,44 @@ Module = (debug, utils, $)->
 
       return listWord
 
-    # Different Algo to find the best score for the next guess
-    # TODO: need to improve I think
-    ###########################################################
-    # getLetterScore: (freq, nbWord, stillTry)->
-    #   _DEBUG_LOG_ and @log 'getLetterScore', 2
-
-    #   score = {}
-    #   for k, v of freq
-    #     p = v / nbWord
-    #     entropy = 0
-    #     entropy -= p * Math.log p
-    #     score[k] = (1 - stillTry) * p + (1 - stillTry) * entropy + stillTry * p + stillTry * entropy
-
-      return score
-
     makeGuess : (guessWord, maxGuess)->
       _DEBUG_LOG_ and @log 'makeGuess', 2
+      _DEBUG_LOG_ and @log ' > looking in '+guessWord.whichDic+' dic'
 
-      words = @getPossibleWords @allWords, guessWord
-      freq = @getLetterFreq words
+      if  guessWord.whichDic == 'alphabet'
+        _DEBUG_LOG_ and @log ' > looking in '+guessWord.whichDic+' dic'
+        letters = alphabet
+      else
+        possibleWords = @getPossibleWords this[guessWord.whichDic], guessWord
+        if possibleWords.length <= 0 and guessWord.whichDic == 'shortWords' # no more word in the short dictionnary shortWords
+          guessWord.whichDic = 'allWords'
+          _DEBUG_LOG_ and @log 'no more words in the dic > looking in '+guessWord.whichDic+' dic'
+          @makeGuess guessWord, maxGuess
+          return
 
-      # stillTry = guessWord.wrongGuess/maxGuess
-      # score = @getLetterScore freq, words.length, stillTry
-      # console.log score
-
-      letters = @getSortedLetter freq
-      letters = (char for char in letters when -1 == guessWord.value.indexOf(char))
+        if possibleWords.length <= 0 and guessWord.whichDic == 'allWords' # no more word in the big dictionnary allWords
+          _DEBUG_LOG_ and @log 'no more words in the '+guessWord.whichDic+' dic > looking other letters'
+          letters = alphabet
+          guessWord.whichDic = 'alphabet'
+        else
+          letters = @getBestGuess guessWord.value, possibleWords
 
       if guessWord.bestLetter?
-        guessWord.wrongLetter += guessWord.bestLetter
-        letters = (char for char in letters when -1 == guessWord.wrongLetter.indexOf(char))
+        guessWord.triedLetter += guessWord.bestLetter
+        letters = (char for char in letters when -1 == guessWord.triedLetter.indexOf(char))
 
+      _DEBUG_LOG_ and @log ' > letters = ', 0, letters
       guessWord.bestLetter = letters.shift()
+
       _DEBUG_LOG_ and @log ' > guessWord =', 0, guessWord
+      return
+
+    getBestGuess: (pattern, possibleWords)->
+      freq = @getLetterFreq possibleWords
+      letters = @getSortedLetter freq
+      letters = (char for char in letters when -1 == pattern.indexOf(char))
+
+      return letters
 
   return WordsList
 

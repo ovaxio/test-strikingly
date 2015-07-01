@@ -14,7 +14,8 @@ Module = (debug, utils, $)->
       @options = utils.extend defaults, options
       _DEBUG_LOG_ and @log 'constructor', 1, @
       @nbLetterToGuess = 0
-      @wrongLetter = ''
+      @triedLetter = ''
+      @whichDic = 'shortWords'
 
       @regex = @getRegex()
 
@@ -28,11 +29,12 @@ Module = (debug, utils, $)->
       while (m = otherRegExp.exec(@value)) != null
         if m.index == starsRegExp.lastIndex
           starsRegExp.lastIndex++
-        guessedLetters += m[0]
+        letter = m[0].toLowerCase()
+        guessedLetters += letter if -1 == guessedLetters.indexOf letter
 
       re = '.'
       if guessedLetters.length > 0
-        re = '[^'+guessedLetters+@wrongLetter+']'
+        re = '[^'+@triedLetter+']'
 
       pattern = '^(' + @value.replace starsRegExp, re
       pattern+= ')$'

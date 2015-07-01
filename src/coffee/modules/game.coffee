@@ -5,11 +5,12 @@ Module = (debug, utils, WordsList, Word, $)->
     _DEBUG_LOG_ and moduleName : 'Game'
 
     defaults =
-      url: ''
-      userId: ''
-    _DEBUG_LOG_ and defaults.debug = 0
+      url: 'https://strikingly-hangman.herokuapp.com/game/on'
+      userId: 'guillaume.chambard@gmail.com'
+    _DEBUG_LOG_ and defaults.debug = 1
 
     nbWord = 0
+    resultDiv = $ '.result'
 
     constructor: (options= {})->
       @options = utils.extend defaults, options
@@ -77,15 +78,17 @@ Module = (debug, utils, WordsList, Word, $)->
           switch true
             when @guessWord.wrongGuess >= @data.numberOfGuessAllowedForEachWord or -1 == @guessWord.value.indexOf '*'
               _DEBUG_LOG_ and @log 'makeGuess() > guessWord = ', 0, @guessWord
+              _DEBUG_LOG_ and @log 'makeGuess() > nbGuessedWord = ', 1, nbWord
+              _DEBUG_LOG_ and @log 'makeGuess() > numberOfWordsToGuess = ', 1, @data.numberOfWordsToGuess
 
               if nbWord < @data.numberOfWordsToGuess
                 @getResult()
+                resultDiv.append '<pre>'+JSON.stringify(@guessWord)+'</pre>'
                 @nextWord()
-
               else
                 @getResult()
-                .done (result)->
-                  submitScore = window.prompt 'Do you want to submit your score of '+result.score+' (write \'yes\' to confirm)'
+                .done (result)=>
+                  submitScore = window.prompt 'Do you want to submit your score of '+result.data.score+' (write \'yes\' to confirm)'
                   if 'yes' == submitScore
                     @submitResult()
             else
@@ -95,6 +98,7 @@ Module = (debug, utils, WordsList, Word, $)->
         return promise
 
       _DEBUG_LOG_ and @log 'makeGuess() > guessWord = ', 0, @guessWord
+      $
       @nextWord()
       return false
 
