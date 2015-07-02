@@ -1,0 +1,14 @@
+doctype html
+html(lang="en")
+  head
+    title= Bootstrap
+
+  body
+    .result
+    script(type='text/javascript' src="assets/js/require.js")
+    script(type='text/javascript').
+      requirejs.config({
+        waitSeconds: 0,
+        baseUrl: './js/'
+      });
+      require(["main"], function(main){});
