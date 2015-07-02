@@ -1,0 +1,48 @@
+- var name = "Sara Robertson";
+
+doctype html
+html(lang="en")
+  head
+    meta(content='text/html; charset=UTF-8', http-equiv='Content-Type')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    meta(http-equiv="X-UA-Compatible", content="IE=Edge")
+    title #{name} Profile
+    link(href='http://fonts.googleapis.com/css?family=Martel+Sans:400,700' rel='stylesheet' type='text/css')
+    link(rel="stylesheet", type="text/css", href="css/styles.css")
+    <!--[if lt IE 9]>
+    script(src="assets/js/html5shiv.min.js")
+    <![endif]-->
+  body
+    section.card
+      header.card--header
+        .card--handle
+          .handle--line
+            span.handle--circle
+            span.handle--circle
+            span.handle--circle
+            span.handle--circle
+          .handle--line
+            span.handle--circle
+            span.handle--circle
+            span.handle--circle
+            span.handle--circle
+          .handle--line
+            span.handle--circle
+            span.handle--circle
+            span.handle--circle
+            span.handle--circle
+        .card--photo
+          img(src="assets/img/profile_pic.jpg", alt="")
+      .card--body
+        .card--title
+          | #{name}
+        .card--subtitle Graphic Designer
+
+        button.card--btn__follow follow
+      footer.card--footer
+        .column.card--followers
+          strong.card--value 383
+          span.card--label followers
+        .column.card--following
+          strong.card--value 239
+          span.card--label following

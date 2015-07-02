@@ -1,0 +1,22 @@
+{
+  "name": "profile",
+  "version": "1.0.0",
+  "description": "a little html/css integration for strikingly",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp-concat": "^2.6.0",
+    "gulp-jade": "^1.0.1",
+    "gulp-load-plugins": "^1.0.0-rc.1",
+    "gulp-notify": "^2.2.0",
+    "gulp-plumber": "^1.0.1",
+    "gulp-server-livereload": "^1.4.0",
+    "gulp-size": "^1.2.3",
+    "gulp-stylus": "^2.0.5",
+    "nib": "^1.1.0"
+  }
+}

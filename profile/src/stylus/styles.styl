@@ -1,0 +1,144 @@
+@import 'nib'
+global-reset()
+
+$color-grey  = #2F363E
+$color-peach = #E7DECD
+$color-grey-light = #545C67
+$color-red = #C44B30
+
+
+
+*
+  box-sizing border-box
+
+body
+  background url('../assets/img/bg.png')
+  font 400 14px/16px 'Martel Sans', sans-serif
+  text-transform uppercase
+  margin-top 79px
+  text-align center
+  color $color-grey-light
+  // letter-spacing 1px
+
+img
+  height auto
+  max-width 100%
+
+strong
+  font-weight 700
+$header-padding-top = 23px
+$header-height = 138px
+// $translate = $header-height - $header-padding-top - (154 / 2)px
+
+.card
+  background $color-grey
+  border 1px solid #171C22
+  border-radius 10px
+  box-shadow 0 10px 10px -10px rgba(0,0,0,0.5), 0 1px 4px rgba(0,0,0,0.3), 0 20px 20px -10px rgba(0,0,0,0.2)
+  margin 0 auto
+  overflow hidden
+  width 326px
+  clearfix()
+
+.card--header
+  background $color-peach
+  height $header-height
+  position relative
+
+.card--photo
+  margin 0 auto
+  margin-top 2em
+  width 154px
+  height 154px
+  font-size 0px
+  border-radius 50%
+  box-shadow 0 0 0 5px $color-peach
+  overflow hidden
+  position: absolute
+  top 60px
+  left 50%
+  margin-left -77px
+
+  &:before
+  &:after
+    content ''
+    left 0
+    position: absolute
+    right 0
+    top 0
+    bottom 0
+
+  &:after
+    border-radius 50%
+    box-shadow 0 0 1px 0 rgba(0, 0, 0, .5) inset
+
+  &:before
+    background: linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%)
+    transform rotate(45deg) translateX(-50%) translateY(-50%)
+
+.card--body
+  margin-top 112px
+
+.card--title
+  color #E7DECD
+  font-size 1.45em
+  margin-bottom .4em
+
+.card--subtitle
+  margin-bottom 25px
+
+.card--btn__follow
+  background $color-red
+  border 1px solid #171C22
+  border-radius 4px
+  box-shadow 0 1px 1px 0 rgba(255, 255, 255, .2) inset
+  color #fff
+  cursor pointer
+  font-weight 700
+  line-height 35px
+  text-align: center
+  text-shadow -1px 1px 1px rgba(0, 0, 0, .2)
+  text-transform: uppercase
+  width 162px
+  margin-bottom 30px
+
+.card--value
+.card--label
+  vertical-align: middle;
+
+.card--value
+  font-size 1.3em
+  margin-right 0.3em
+  color #171C22
+
+.column
+  width 50%
+  margin 0
+  float left
+  box-shadow 0px 1px 1px 0 rgba(255, 255, 255, .08) inset
+
+  &:first-child
+    box-shadow -1px 1px 1px 0 rgba(255, 255, 255, .08) inset
+    border-right 1px solid #171C22
+
+.card--followers
+.card--following
+  padding 21px 0 18px 0
+  border-top 1px solid #171C22
+
+.card--handle
+  padding-top 20px
+  cursor pointer
+
+.handle--circle
+  background-color: #fff;
+  width: 4px
+  height: 4px
+  border-radius: 50%
+  display: inline-block
+  margin: 1.5px 1.5px
+  box-shadow 0px -1px 2px 0 #a89c7a inset
+
+.handle--line
+  font-size 0px
+  line-height 0px
