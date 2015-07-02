@@ -101,40 +101,60 @@ Module = (debug, utils, $)->
       _DEBUG_LOG_ and @log 'makeGuess', 2
       _DEBUG_LOG_ and @log ' > looking in '+guessWord.whichDic+' dic'
 
-      if  guessWord.whichDic == 'alphabet'
-        _DEBUG_LOG_ and @log ' > looking in '+guessWord.whichDic+' dic'
-        letters = alphabet
-      else
-        possibleWords = @getPossibleWords this[guessWord.whichDic], guessWord
-        if possibleWords.length <= 0 and guessWord.whichDic == 'shortWords' # no more word in the short dictionnary shortWords
-          guessWord.whichDic = 'allWords'
-          _DEBUG_LOG_ and @log 'no more words in the dic > looking in '+guessWord.whichDic+' dic'
-          @makeGuess guessWord, maxGuess
-          return
-
-        if possibleWords.length <= 0 and guessWord.whichDic == 'allWords' # no more word in the big dictionnary allWords
-          _DEBUG_LOG_ and @log 'no more words in the '+guessWord.whichDic+' dic > looking other letters'
-          letters = alphabet
-          guessWord.whichDic = 'alphabet'
-        else
-          letters = @getBestGuess guessWord.value, possibleWords
+      letters = @getAllPossibleLetters guessWord, maxGuess
 
       if guessWord.bestLetter?
         guessWord.triedLetter += guessWord.bestLetter
-        letters = (char for char in letters when -1 == guessWord.triedLetter.indexOf(char))
+        letters = (ch for ch in letters when -1 == guessWord.triedLetter.indexOf(ch))
 
       _DEBUG_LOG_ and @log ' > letters = ', 0, letters
       guessWord.bestLetter = letters.shift()
 
       _DEBUG_LOG_ and @log ' > guessWord =', 0, guessWord
-      return
+      return guessWord.bestLetter
+
+    getAllPossibleLetters: (guessWord, maxGuess)->
+      _DEBUG_LOG_ and @log 'getAllPossibleLetters', 2
+      if  guessWord.whichDic == 'alphabet'
+        _DEBUG_LOG_ and @log ' > looking in '+guessWord.whichDic+' dic'
+        return alphabet
+
+      else
+        possibleWords = @getPossibleWords this[guessWord.whichDic], guessWord
+
+        if possibleWords.length <= 0
+          #  change dictionnary
+          guessWord.whichDic = @getNextDictionnary guessWord.whichDic
+          return @getAllPossibleLetters guessWord, maxGuess
+
+        else
+          # normal behavior : have words in the current dictionnary
+          return @getBestGuess guessWord.value, possibleWords
+
+    getNextDictionnary: (dic)->
+      _DEBUG_LOG_ and @log 'getNextDictionnary', 2
+      switch dic
+        when 'shortWords'
+          # no more word in the short dictionnary shortWords
+          _DEBUG_LOG_ and @log 'no more words in the dic > looking in '+dic+' dic'
+          return 'allWords'
+
+        when 'allWords'
+          # no more word in the big dictionnary allWords
+          _DEBUG_LOG_ and @log 'no more words in the '+dic+' dic > looking other letters'
+          return 'alphabet'
+
+        else
+          return 'alphabet'
 
     getBestGuess: (pattern, possibleWords)->
-      freq = @getLetterFreq possibleWords
-      letters = @getSortedLetter freq
-      letters = (char for char in letters when -1 == pattern.indexOf(char))
+      _DEBUG_LOG_ and @log 'getBestGuess', 2
 
-      return letters
+      lettersFreq = @getLetterFreq possibleWords
+      letters = @getSortedLetter lettersFreq
+      lettersFiltered = (ch for ch in letters when -1 == pattern.indexOf(ch))
+
+      return lettersFiltered
 
   return WordsList
 

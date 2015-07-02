@@ -5,9 +5,9 @@ Module = (debug, utils, WordsList, Word, $)->
     _DEBUG_LOG_ and moduleName : 'Game'
 
     defaults =
-      url: ''
-      userId: ''
-    _DEBUG_LOG_ and defaults.debug = 1
+      url: 'https://strikingly-hangman.herokuapp.com/game/on'
+      userId: 'guillaume.chambard@gmail.com'
+    _DEBUG_LOG_ and defaults.debug = 0
 
     nbWord = 0
     resultDiv = $ '.result'
@@ -40,7 +40,7 @@ Module = (debug, utils, WordsList, Word, $)->
         $.extend @, result
         _DEBUG_LOG_ and @log 'start() > data = ', 0, result.data
         # nextWord
-        @nextWord()
+        return @nextWord()
 
       return promise
 
@@ -56,19 +56,19 @@ Module = (debug, utils, WordsList, Word, $)->
         _DEBUG_LOG_ and @log 'nextWord() > data = ', 0, result.data
         @guessWord = new Word result.data.word, 0, 0
         nbWord++
-        @makeGuess()
+        return @makeGuess()
 
       return promise
 
     makeGuess: ()->
       _DEBUG_LOG_ and @log 'makeGuess', 1
-      @wordsList.makeGuess @guessWord, @.data.numberOfGuessAllowedForEachWord
+      guess = @wordsList.makeGuess @guessWord, @.data.numberOfGuessAllowedForEachWord
 
       if @guessWord?.bestLetter?
         data =
           'sessionId' : @sessionId
           'action' : 'guessWord'
-          'guess' :  @guessWord.bestLetter.toUpperCase()
+          'guess' :  guess.toUpperCase()
 
         promise = @callApi data
         .done (result)=>
@@ -77,28 +77,29 @@ Module = (debug, utils, WordsList, Word, $)->
 
           switch true
             when @guessWord.wrongGuess >= @data.numberOfGuessAllowedForEachWord or -1 == @guessWord.value.indexOf '*'
+              # no more guess for this word (word found or nb of guess allowed reached)
               _DEBUG_LOG_ and @log 'makeGuess() > guessWord = ', 0, @guessWord
               _DEBUG_LOG_ and @log 'makeGuess() > nbGuessedWord = ', 1, nbWord
               _DEBUG_LOG_ and @log 'makeGuess() > numberOfWordsToGuess = ', 1, @data.numberOfWordsToGuess
 
-              if nbWord < @data.numberOfWordsToGuess
+              if nbWord < @data.numberOfWordsToGuess #still in game
                 @getResult()
                 resultDiv.append '<pre>'+JSON.stringify(@guessWord)+'</pre>'
                 @nextWord()
-              else
+              else #game over
                 @getResult()
                 .done (result)=>
                   submitScore = window.prompt 'Do you want to submit your score of '+result.data.score+' (write \'yes\' to confirm)'
                   if 'yes' == submitScore
                     @submitResult()
             else
+              # still in game on the curent word
               @guessWord.regex = @guessWord.getRegex()
               @makeGuess()
 
         return promise
 
       _DEBUG_LOG_ and @log 'makeGuess() > guessWord = ', 0, @guessWord
-      $
       @nextWord()
       return false
 
@@ -137,5 +138,5 @@ do(root = @, factory = Module)->
             "jquery"
           ], factory
   else
-    root.WordsList = factory()
+    root.Game = factory()
   return
