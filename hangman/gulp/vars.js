@@ -23,7 +23,8 @@ module.exports = {
   },
   watch : {
     coffee : [src_path+'/coffee/**/*.coffee'],
-    jade : src_path+'/jade/**/*.jade'
+    jade : src_path+'/jade/**/*.jade',
+    assets : src_path+'/assets/**/*'
   },
   onError: {
     title: "Error <%= error.plugin %> : <%= error.name %>",
